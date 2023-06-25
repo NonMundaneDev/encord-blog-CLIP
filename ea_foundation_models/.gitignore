@@ -1,0 +1,17 @@
+ea-venv
+emotions-1
+*.pyc
+__pycache__
+.ipy*
+Clip_GT_labels
+EASOTA/
+EASOTA/*
+EAemotions-1/
+EAemotions-1/*
+part-1.ipynb
+part-2.ipynb
+part1.py
+part2a.py
+part2b.py
+test.json
+create_dataset_with_GTL.py
