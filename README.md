@@ -37,18 +37,15 @@ Link to dataset to the working directory - [`emotions-1`](https://www.dropbox.co
 4. Unzip dataset
 
     ```bash
-    unzip emotions-1.zip
+    unzip emotions.zip
     ```
 
 5. Create First encord project (CLIP classification)
 
     ```bash
-    # Change directory
-    cd ./ea_foundation_models
+    encord-active init --name EAemotions --transformer classification_transformer.py ./emotions
 
-    encord-active init --name EAemotions --transformer classification_transformer.py ./emotions-1
-
-    # Change directory
+    # Change Directory
     cd ./EAemotions
 
     # Store ontology
@@ -62,7 +59,7 @@ Link to dataset to the working directory - [`emotions-1`](https://www.dropbox.co
     cd ..
 
     # execute script
-    python milestone-1a.py
+    python make_clip_predictions.py
     ```
 
 7. Import CLIP prediction into encord-active project
@@ -85,7 +82,7 @@ Link to dataset to the working directory - [`emotions-1`](https://www.dropbox.co
    cd ..
 
    # Except training script
-   python milestone-1b.py
+   python train_cnn.py
    ```
 
 9. Create a new encord project
@@ -108,7 +105,7 @@ Link to dataset to the working directory - [`emotions-1`](https://www.dropbox.co
     cd ..
 
     # execute script
-    python milestone-1c.py
+    python cnn_prediction.py
     ```
 
 11. Import predictions into encord-active project
