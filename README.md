@@ -2,7 +2,7 @@
 
 This repository is for a blog article on evaluating Foundation Models (CLIP) using Encord Active. 🟣 Encord Active is an open-source framework for computer vision model testing, evaluation, and validation.
 
-Link to dataset to the working directory - [`emotions-1`](https://www.dropbox.com/sh/rovspvmbtxg2mdx/AAAk9UM8GI57KhRD5ljehGDNa?dl=0).
+Link to dataset to the working directory - [`emotions`](https://www.dropbox.com/sh/rovspvmbtxg2mdx/AAAk9UM8GI57KhRD5ljehGDNa?dl=0).
 
 ## 🚀 Steps
 
@@ -37,18 +37,15 @@ Link to dataset to the working directory - [`emotions-1`](https://www.dropbox.co
 4. Unzip dataset
 
     ```bash
-    unzip emotions-1.zip
+    unzip emotions.zip
     ```
 
 5. Create First encord project (CLIP classification)
 
     ```bash
-    # Change directory
-    cd ./ea_foundation_models
+    encord-active init --name EAemotions ./emotions
 
-    encord-active init --name EAemotions --transformer classification_transformer.py ./emotions-1
-
-    # Change directory
+    # Change Directory
     cd ./EAemotions
 
     # Store ontology
@@ -62,7 +59,7 @@ Link to dataset to the working directory - [`emotions-1`](https://www.dropbox.co
     cd ..
 
     # execute script
-    python milestone-1a.py
+    python make_clip_predictions.py
     ```
 
 7. Import CLIP prediction into encord-active project
@@ -85,14 +82,14 @@ Link to dataset to the working directory - [`emotions-1`](https://www.dropbox.co
    cd ..
 
    # Except training script
-   python milestone-1b.py
+   python train_cnn.py
    ```
 
 9. Create a new encord project
 
     ```bash
     # Create project
-    encord-active init --name EAsota --transformer classification_transformer.py Clip_GT_labels\Test
+    encord-active init --name EAsota Clip_GT_labels\Test
 
     # Change to project directory
     cd EAsota
@@ -108,7 +105,7 @@ Link to dataset to the working directory - [`emotions-1`](https://www.dropbox.co
     cd ..
 
     # execute script
-    python milestone-1c.py
+    python cnn_prediction.py
     ```
 
 11. Import predictions into encord-active project
