@@ -2,7 +2,7 @@
 
 This repository is for a blog article on evaluating Foundation Models (CLIP) using Encord Active. 🟣 Encord Active is an open-source framework for computer vision model testing, evaluation, and validation.
 
-Link to dataset to the working directory - [`emotions-1`](https://www.dropbox.com/sh/rovspvmbtxg2mdx/AAAk9UM8GI57KhRD5ljehGDNa?dl=0).
+Link to dataset to the working directory - [`emotions`](https://www.dropbox.com/sh/rovspvmbtxg2mdx/AAAk9UM8GI57KhRD5ljehGDNa?dl=0).
 
 ## 🚀 Steps
 
@@ -43,7 +43,7 @@ Link to dataset to the working directory - [`emotions-1`](https://www.dropbox.co
 5. Create First encord project (CLIP classification)
 
     ```bash
-    encord-active init --name EAemotions --transformer classification_transformer.py ./emotions
+    encord-active init --name EAemotions ./emotions
 
     # Change Directory
     cd ./EAemotions
@@ -89,7 +89,7 @@ Link to dataset to the working directory - [`emotions-1`](https://www.dropbox.co
 
     ```bash
     # Create project
-    encord-active init --name EAsota --transformer classification_transformer.py Clip_GT_labels\Test
+    encord-active init --name EAsota Clip_GT_labels\Test
 
     # Change to project directory
     cd EAsota
