@@ -121,23 +121,22 @@ model.load_state_dict(torch.load(model_path))
 my_predictions = []  # To store predicted labels
 predictions_to_import = []  # Predictions to be imported into encord-active
 image_paths = []  # List of all image paths
-image_labels = []  # List of all image True classes
+
+# List of all image True classes
+image_labels = [
+    get_label(lr['classification_answers'])
+    for lr in project.label_rows.values()
+]
 
 
-for lr in tqdm(project.label_rows.values()):
-    label_hash = lr['label_hash']
-    data_unit_hash = list(lr['data_units'].keys())[0]
-    image_path = os.path.join(
-        project.file_structure.data,
-        label_hash,
-        'images',
-        data_unit_hash+'.jpg'
-    )
-    image_paths.append(image_path)
-    image_labels.append(get_label(lr['classification_answers']))
-    image = cv2.imread(image_path.as_posix())
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    image_transformed = test_transforms(image)
+# Make predictions
+for item in tqdm(project.file_structure.iter_labels()):
+    for data_unit_hash, image_path in item.iter_data_unit():
+        data_unit_hash, image_path = str(data_unit_hash), str(image_path)
+        image_paths.append(image_path)
+        image = cv2.imread(image_path.as_posix())
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        image_transformed = test_transforms(image)
 
     model.eval()
     output = model(image_transformed.to(device).unsqueeze(dim=0))
