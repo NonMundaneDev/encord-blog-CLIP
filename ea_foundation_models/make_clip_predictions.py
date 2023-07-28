@@ -73,7 +73,12 @@ def get_label(classification_answers):
 my_predictions = []  # To store predicted labels
 predictions_to_import = []  # Predictions to be imported into encord-active
 image_paths = []  # List of all image paths
-image_labels = []  # List of all image True classes
+
+# List of all image True classes
+image_labels = [
+    get_label(lr['classification_answers'])
+    for lr in project.label_rows.values()
+]
 
 # Image Transformer function
 transform_f = transforms.Compose(
@@ -85,42 +90,35 @@ transform_f = transforms.Compose(
 )
 
 # Make predictions
-for lr in tqdm(project.label_rows.values()):
-    label_hash = lr['label_hash']
-    data_unit_hash = list(lr['data_units'].keys())[0]
-    image_path = os.path.join(
-        project.file_structure.data,
-        label_hash,
-        'images',
-        data_unit_hash+'.jpg'
-    )
-    image_paths.append(image_path)
-    image_labels.append(get_label(lr['classification_answers']))
-    image = cv2.imread(image_path.as_posix())
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    image_transformed = transform_f(image)
+for item in tqdm(project.file_structure.iter_labels()):
+    for data_unit_hash, image_path in item.iter_data_unit():
+        data_unit_hash, image_path = str(data_unit_hash), str(image_path)
+        image_paths.append(image_path)
+        image = cv2.imread(image_path)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        image_transformed = transform_f(image)
 
-    with torch.no_grad():
-        logits_per_image, logits_per_text = model(
-            image_transformed.to(device).unsqueeze(dim=0),
-            encoded_texts
-        )
-        class_id = logits_per_image.argmax(dim=1, keepdim=True)[0][0].item()
-        model_prediction = project_ontology['classifications'][classes[class_id]]
-        my_predictions.append(classes[class_id])
-        confidence = logits_per_image.softmax(1).tolist()[0][class_id]
-
-        predictions_to_import.append(
-            Prediction(
-                data_hash=data_unit_hash,
-                confidence=confidence,
-                classification=FrameClassification(
-                    feature_hash=model_prediction['feature_hash'],
-                    attribute_hash=model_prediction['attribute_hash'],
-                    option_hash=model_prediction['option_hash'],
-                ),
+        with torch.no_grad():
+            logits_per_image, logits_per_text = model(
+                image_transformed.to(device).unsqueeze(dim=0),
+                encoded_texts
             )
-        )
+            class_id = logits_per_image.argmax(dim=1, keepdim=True)[0][0].item()
+            model_prediction = project_ontology['classifications'][classes[class_id]]
+            my_predictions.append(classes[class_id])
+            confidence = logits_per_image.softmax(1).tolist()[0][class_id]
+
+            predictions_to_import.append(
+                Prediction(
+                    data_hash=data_unit_hash,
+                    confidence=confidence,
+                    classification=FrameClassification(
+                        feature_hash=model_prediction['feature_hash'],
+                        attribute_hash=model_prediction['attribute_hash'],
+                        option_hash=model_prediction['option_hash'],
+                    ),
+                )
+            )
 
 
 # Export predictions
@@ -155,8 +153,8 @@ def create_dataset(path="Clip_GT_labels", train_ratio=0.6):
     print("Creating Dataset using CLIP predictions as GT labels")
 
     # Train set
+    print("Creating Train Dataset")
     for image_path, label in tqdm(zip(train_image_paths, train_classes)):
-        print("Creating Train Dataset")
         folder_name = os.path.join(train_folder, label)
 
         if not os.path.exists(folder_name):
@@ -167,8 +165,8 @@ def create_dataset(path="Clip_GT_labels", train_ratio=0.6):
         shutil.copy(image_path, filepath)
 
     # Val set
+    print("Creating Validation Dataset")
     for image_path, label in tqdm(zip(val_image_paths, val_classes)):
-        print("Creating Validation Dataset")
         folder_name = os.path.join(val_folder, label)
 
         if not os.path.exists(folder_name):
@@ -179,8 +177,8 @@ def create_dataset(path="Clip_GT_labels", train_ratio=0.6):
         shutil.copy(image_path, filepath)
 
     # Test set
+    print("Creating Test Dataset")
     for image_path, label in tqdm(zip(test_image_paths, test_classes)):
-        print("Creating Test Dataset")
         folder_name = os.path.join(test_folder, label)
 
         if not os.path.exists(folder_name):
