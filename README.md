@@ -21,7 +21,7 @@ Link to dataset to the working directory - [`emotions`](https://www.dropbox.com/
 2. Install encord active
 
     ```bash
-    python -m pip install encord-active
+    python -m pip install encord-active==0.1.69
     ```
 
 3. Install some other required libraries
